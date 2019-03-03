@@ -1,166 +1,68 @@
 #include<stdio.h>
-#include<stdlib.h>
 #include<pthread.h>
+#include<stdlib.h>
 
-void *add();
-double oneThread();
-double twoThreads();
-double fourThreads();
-double eightThreads();
+#define GOAL 2000000000
 
-#define rounds 1000000000
 pthread_mutex_t mutex1 = PTHREAD_MUTEX_INITIALIZER;
 int counter = 0;
 
+void *add(void *args);
+void executeThread(int number);
+
 int main()
 {
-  oneThread();
-  twoThreads();
-  fourThreads();
-  eightThreads();
+  pthread_mutex_init(&mutex1, NULL);
+  printf("1 threads are executing, please wait...\n");
+  clock_t begin = clock();
+  while(counter < GOAL)
+  {
+    counter++;
+  }
+  clock_t end = clock();
+  double time = (double)(end-begin) / CLOCKS_PER_SEC;
+  double efficiency = (double)(GOAL / time);
+  printf("1 threads finish, counter = %d, benchmark = %f i/s\n", counter, efficiency);
+  executeThread(2);
+  executeThread(4);
+  executeThread(8);
   return 0;
 }
 
-double oneThread()
+void executeThread(int number)
 {
-  printf("One thread is exeuting, please wait...\n");
+  printf("%d threads are executing, please wait...\n", number);
   counter = 0;
+  pthread_t thread_id[number];
+  int i, j;
   clock_t begin = clock();
-  while(counter < rounds) { counter++; }
+  for(i = 0; i < number; i++)
+  {
+    pthread_create(&thread_id[i], NULL, add, &thread_id[i]);
+  }
+
+  for(j = 0; j < number; j++)
+  {
+    pthread_join( thread_id[j], NULL);
+  }
   clock_t end = clock();
   double time = (double)(end-begin) / CLOCKS_PER_SEC;
-  double efficiency = (double)(rounds / time);
-  printf("One thread finish, counter = %d, benchmark = %f i/s\n", counter, efficiency);
+  double efficiency = (double)(GOAL / time);
+  printf("%d threads finish, counter = %d, benchmark = %f i/s\n", number, counter, efficiency);
 }
 
-double twoThreads()
+void *add(void *args)
 {
-  printf("Two threads are exeuting, please wait...\n");
-  
-  counter = 0;
-  int rc1, rc2;
-  pthread_t thread1, thread2;
+  pthread_mutex_lock(&mutex1);
 
-  clock_t begin = clock();
-  if(rc1 = pthread_create(&thread1, NULL, &add, (void*)&thread1))
+  int round = 0;
+  int *thread_args = (int*) args;
+  printf("This is thread: %d\n", *thread_args);
+  while(counter < GOAL && round < GOAL/2)
   {
-    printf("thread %d creation failed!\n", rc1);
-  }
-  if(rc2 = pthread_create(&thread2, NULL, &add, (void*)&thread2))
-  {
-    printf("thread %d creation failed!\n", rc2);
-  }
-  
-  pthread_join(thread1, NULL);
-  pthread_join(thread2, NULL);
-  clock_t end = clock();
-  double time = (double)(end-begin) / CLOCKS_PER_SEC;
-  double efficiency = (double)(rounds / time);
-  printf("Two threads finish, counter = %d, benchmark = %f i/s\n", counter, efficiency);
-}
-
-double fourThreads()
-{
-  printf("Four threads are exeuting, please wait...\n");
-  
-  counter = 0;
-  int rc1, rc2, rc3, rc4;
-  pthread_t thread1, thread2, thread3, thread4;
-
-  clock_t begin = clock();
-  if(rc1 = pthread_create(&thread1, NULL, &add, (void*)&thread1))
-  {
-    printf("thread %d creation failed!\n", rc1);
-  }
-  if(rc2 = pthread_create(&thread2, NULL, &add, (void*)&thread2))
-  {
-    printf("thread %d creation failed!\n", rc2);
-  }
-  if(rc3 = pthread_create(&thread3, NULL, &add, (void*)&thread3))
-  {
-    printf("thread %d creation failed!\n", rc3);
-  }
-  if(rc4 = pthread_create(&thread4, NULL, &add, (void*)&thread4))
-  {
-    printf("thread %d creation failed!\n", rc4);
-  }
-  
-  pthread_join(thread1, NULL);
-  pthread_join(thread2, NULL);
-  pthread_join(thread3, NULL);
-  pthread_join(thread4, NULL);
-  clock_t end = clock();
-  double time = (double)(end-begin) / CLOCKS_PER_SEC;
-  double efficiency = (double)(rounds / time);
-  printf("Four threads finish, counter = %d, benchmark = %f i/s\n", counter, efficiency);
-}
-
-double eightThreads()
-{
-  printf("Eight threads are exeuting, please wait...\n");
-  
-  counter = 0;
-  int rc1, rc2, rc3, rc4, rc5, rc6, rc7, rc8;
-  pthread_t thread1, thread2, thread3, thread4, thread5, thread6,thread7, thread8;
-
-  clock_t begin = clock();
-  if(rc1 = pthread_create(&thread1, NULL, &add, (void*)&thread1))
-  {
-    printf("thread %d creation failed!\n", rc1);
-  }
-  if(rc2 = pthread_create(&thread2, NULL, &add, (void*)&thread2))
-  {
-    printf("thread %d creation failed!\n", rc2);
-  }
-  if(rc3 = pthread_create(&thread3, NULL, &add, (void*)&thread3))
-  {
-    printf("thread %d creation failed!\n", rc3);
-  }
-  if(rc4 = pthread_create(&thread4, NULL, &add, (void*)&thread4))
-  {
-    printf("thread %d creation failed!\n", rc4);
-  }
-  if(rc5 = pthread_create(&thread5, NULL, &add, (void*)&thread5))
-  {
-    printf("thread %d creation failed!\n", rc5);
-  }
-  if(rc6 = pthread_create(&thread6, NULL, &add, (void*)&thread6))
-  {
-    printf("thread %d creation failed!\n", rc6);
-  }
-  if(rc7 = pthread_create(&thread7, NULL, &add, (void*)&thread7))
-  {
-    printf("thread %d creation failed!\n", rc7);
-  }
-  if(rc8 = pthread_create(&thread8, NULL, &add, (void*)&thread8))
-  {
-    printf("thread %d creation failed!\n", rc8);
-  }
-  
-  pthread_join(thread1, NULL);
-  pthread_join(thread2, NULL);
-  pthread_join(thread3, NULL);
-  pthread_join(thread4, NULL);
-  pthread_join(thread5, NULL);
-  pthread_join(thread6, NULL);
-  pthread_join(thread7, NULL);
-  pthread_join(thread8, NULL);
-  clock_t end = clock();
-  double time = (double)(end-begin) / CLOCKS_PER_SEC;
-  double efficiency = (double)(rounds / time);
-  printf("Eight threads finish, counter = %d, benchmark = %f i/s\n", counter, efficiency);
-}
-
-void *add(void *id)
-{
-  while(counter < rounds)
-  {
-    pthread_mutex_lock(&mutex1);
-    //int *a = (int *) id;
-    //printf("thread id = %d, counter = %d\n", *a, counter);
+    round++;
     counter++;
-    pthread_mutex_unlock(&mutex1);
   }
+
+  pthread_mutex_unlock(&mutex1);
 }
-
-
