@@ -2,13 +2,15 @@
 #include<pthread.h>
 #include<stdlib.h>
 
-#define GOAL 100000000
+//Number of tests.
+#define GOAL 10
 
 pthread_mutex_t mutex1 = PTHREAD_MUTEX_INITIALIZER;
 int counter = 0;
 
 void *add(void *args);
 void executeThread(int number);
+int getFloor(int e);
 
 int main()
 {
@@ -22,14 +24,17 @@ int main()
 
 void executeThread(int number)
 {
-  printf("%d threads are executing, please wait...\n", number);
+  printf("%d threads are running, please wait...\n", number);
   int i, j;
   counter = 0;
   pthread_t thread_id[number];
   //Set clock.
   clock_t begin = clock();
+  
   for(i = 0; i < number; i++)
   {
+    //Pass thread number to 'add' function. For example, if we create
+    //n threads, each thread should run floor(GOAL/n) times.
     pthread_create(&thread_id[i], NULL, add, &number);
   }
 
@@ -37,6 +42,7 @@ void executeThread(int number)
   {
     pthread_join( thread_id[j], NULL);
   }
+ 
   clock_t end = clock();
   double time = (double)(end-begin) / CLOCKS_PER_SEC;
   double efficiency = (double)(GOAL / time);
@@ -47,7 +53,8 @@ void *add(void *args)
 {
   int round = 0;
   int *number = (int*) args;
-  while(counter < GOAL && round < GOAL/(*number))
+  int times = getFloor(GOAL/(*number));
+  while(counter < GOAL && round <= times)
   {
     pthread_mutex_lock(&mutex1);
     round++;
@@ -55,4 +62,10 @@ void *add(void *args)
     counter++;
     pthread_mutex_unlock(&mutex1);
   }
+}
+
+int getFloor(int e)
+{
+  if(e - e/1 > 0) return e/1+1;
+  else return e/1;
 }
