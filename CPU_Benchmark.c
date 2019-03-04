@@ -3,7 +3,7 @@
 #include<stdlib.h>
 
 //Number of tests.
-#define GOAL 10
+#define GOAL 1000000000
 
 pthread_mutex_t mutex1 = PTHREAD_MUTEX_INITIALIZER;
 int counter = 0;
@@ -54,12 +54,17 @@ void *add(void *args)
   int round = 0;
   int *number = (int*) args;
   int times = getFloor(GOAL/(*number));
-  while(counter < GOAL && round <= times)
+  //If round less or equal to time, 
+  while(round <= times)
   {
     pthread_mutex_lock(&mutex1);
     round++;
-    //printf("%d threads running\n", (*number));
-    counter++;
+    if(counter < GOAL)
+    {
+      //printf("%d threads running\n", (*number));
+      counter++;
+    }
+    else { round = times + 1; } //If counter is equal to GOAL, program should be finsihed.
     pthread_mutex_unlock(&mutex1);
   }
 }
