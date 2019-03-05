@@ -3,7 +3,7 @@
 #include <pthread.h>
 #include <string.h>
 
-#define GOAL 100000000
+#define GOAL 10000000000
 
 void executeThread(int number, char* type);
 void *addDouble(void *args);
@@ -38,7 +38,7 @@ void executeThread(int number, char* type)
   printf("%d threads are creating, please wait...\n", number);
   pthread_t thread_id[number];
   struct ARGS *args[number];
-  clock_t begin = clock();
+  time_t begin = time(NULL);
   if(strcmp(type, "double") == 0)
   {
     for(int i = 0; i < number; i++)
@@ -46,7 +46,7 @@ void executeThread(int number, char* type)
       args[i] = (struct ARGS*)malloc(sizeof(struct ARGS));
       args[i]->thread_id = i+1;
       args[i]->rounds = GOAL/number;
-      printf("Thread %d, GOAL %d, number %d, round is %ld\n", args[i]->thread_id, GOAL, number, args[i]->rounds);
+      printf("Thread %d, GOAL %ld, number %d, round is %ld\n", args[i]->thread_id, GOAL, number, args[i]->rounds);
       pthread_create(&thread_id[i], NULL, addDouble, args[i]);
     }
   }
@@ -57,7 +57,7 @@ void executeThread(int number, char* type)
       args[i] = (struct ARGS*)malloc(sizeof(struct ARGS));
       args[i]->thread_id = i+1;
       args[i]->rounds = GOAL/number;
-      printf("Thread %d, GOAL %d, number %d, round is %ld\n", args[i]->thread_id, GOAL, number, args[i]->rounds);
+      printf("Thread %d, GOAL %ld, number %d, round is %ld\n", args[i]->thread_id, GOAL, number, args[i]->rounds);
       pthread_create(&thread_id[i], NULL, addFloat, args[i]);
     }
   }
@@ -66,8 +66,8 @@ void executeThread(int number, char* type)
   {
     pthread_join( thread_id[i], NULL);
   }
-  clock_t end = clock();
-  double time = (double)(end-begin) / CLOCKS_PER_SEC;
+  time_t end = time(NULL);
+  double time = (double)(end-begin);
   double efficiency = (double)(GOAL / time / 1000000000);
   printf("%d threads finish, benchmark = %f giga/s\n", number, efficiency);
 }
