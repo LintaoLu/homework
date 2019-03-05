@@ -7,12 +7,12 @@
 
 void **createMatrix(int length, int type, void* number);
 void displayMatrix(void** matrix, int length, int type);
-void **multiplyMatrix(void** left_1, void** right_1, int length, int type);
+void **multiplyMatrix(void** left_1, void** right_1, int length, int type, int start, int end);
 
 int main()
 {
 	double a = 1, b = 2;
-	float c = 1;
+	float c = 1, d = 2;
 	int length = 5;
 	double** left = (double**)createMatrix(length, DOUBLE, &a);
 	displayMatrix((void**)left, length, DOUBLE);
@@ -20,7 +20,7 @@ int main()
 	double** right = (double**)createMatrix(length, DOUBLE, &b);
 	displayMatrix((void**)right, length, DOUBLE);
 	printf("\n");
-	double** answer = (double**)multiplyMatrix((void**)left, (void**)right, length, DOUBLE);
+	double** answer = (double**)multiplyMatrix((void**)left, (void**)right, length, DOUBLE, 0, 1);
 	displayMatrix((void**)answer, length, DOUBLE);
 	return 0;
 }
@@ -82,7 +82,7 @@ void displayMatrix(void** matrix, int length, int type)
 	printf("Error: unknow type!");
 }
 
-void **multiplyMatrix(void** left_1, void** right_1, int length, int type)
+void **multiplyMatrix(void** left_1, void** right_1, int length, int type, int start, int end)
 {
 	if (type == DOUBLE)
 	{
@@ -91,14 +91,13 @@ void **multiplyMatrix(void** left_1, void** right_1, int length, int type)
 		double number = 0;
 		double **answer = (double**)createMatrix(length, type, &number);
 		int i, j, k;
-		for (i = 0; i < length; i++)
+		for (i = start; i < end; i++)
 		{
-			for (k = 0; k < length; k++)
+			for (j = 0; j < length; j++)
 			{
-				for (j = 0; j < length; j++)
-					number += (left[i][j] * right[j][i]);
-				answer[i][k] = number;
-				number = 0;
+				answer[i][j] = 0;
+				for (k = 0; k < length; k++)
+					answer[i][j] += left[i][k] * right[k][j];
 			}
 		}
 		return (void**)answer;
@@ -111,18 +110,16 @@ void **multiplyMatrix(void** left_1, void** right_1, int length, int type)
 		float number = 0;
 		float **answer = (float**)createMatrix(length, type, &number);
 		int i, j, k;
-		for (i = 0; i < length; i++)
+		for (i = start; i < end; i++)
 		{
-			for (k = 0; k < length; k++)
+			for (j = 0; j < length; j++)
 			{
-				for (j = 0; j < length; j++)
-					number += (left[i][j] * right[j][i]);
-				answer[i][k] = number;
-				number = 0;
+				answer[i][j] = 0;
+				for (k = 0; k < length; k++)
+					answer[i][j] += left[i][k] * right[k][j];
 			}
 		}
 		return (void**)answer;
 	}
 	return NULL;
 }
-
