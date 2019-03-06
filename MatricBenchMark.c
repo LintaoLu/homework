@@ -11,13 +11,8 @@ void** answer_global;
 struct ARGS
 {
   int thread_id;
-  void **left;
-  void **right;
-  void **answer;
-  int length;
-  int type;
-  int start;
-  int end;
+  void **left, **right, **answer;
+  int length, type, start, end;
 };
 
 
