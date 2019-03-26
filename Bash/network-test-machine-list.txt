@@ -1,0 +1,10 @@
+google.com
+cnn.com
+bbc.com
+bing.com
+abc.go.com
+nbc.com
+yahoo.com
+youtube.com
+web.iit.edu
+nytimes.com

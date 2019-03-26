@@ -1,0 +1,10 @@
+1 2.49
+2 4.85
+3 24.183
+bing.com 5.038
+abc.go.com 4.419
+nbc.com 25.396
+yahoo.com 25.905
+youtube.com 4.487
+web.iit.edu 22.152
+nytimes.com 29.516
